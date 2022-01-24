@@ -16,26 +16,33 @@ library(legion)
 
 ## Function to run
 
+# function to generate time series
 genmultiseries <- function(model = model, nObs = nObs, nVariate = nVariate,
                            persistence.type = "dependent") {
   
+  # covariance matrix
   Sigma <- matrix(c(2, 1,
                     1, 2), ncol = 2)
   
+  # initial values
   vInit <- c(100, 120)
   
+  # choice of the persistence matrix
   if (persistence.type == "dependent") {
     
+    # small effects from the off-diagonals
     matP <- matrix(c(0.4, 0.01,
                      0.01, 0.3), ncol = 2, byrow = TRUE)
     
   } else if (persistence.type == "independent") {
     
+    # no effects from the off-diagonals, acting as if univariate ts with correlated errors
     matP <- matrix(c(0.4, 0.0,
                      0.0, 0.3), ncol = 2, byrow = TRUE)
     
   }
   
+  # generate the time series
   y <- sim.ves(model = model, obs = nObs, nsim = 1, nvariate = nVariate,
                persistence = matP, initial = vInit, bounds = "admissible",
                randomizer = "rnorm", mean = rep(0, nVariate), sd = Sigma)$data
@@ -44,8 +51,13 @@ genmultiseries <- function(model = model, nObs = nObs, nVariate = nVariate,
   
 }
 
+# function to produce the scale of the distribution
 scalerVES <- function(distribution="dnorm", Etype, obsInSample, other=NULL,
                       errors, yFitted=NULL, normalizer=1, loss="likelihood"){
+  
+  # copy and paste from Ivan's function
+  # produce the scale of the distribution
+  
   if(loss=="likelihood"){
     scaleValue <- (errors / normalizer) %*% t(errors / normalizer) / obsInSample;
     return(scaleValue*normalizer^2);
@@ -56,7 +68,10 @@ scalerVES <- function(distribution="dnorm", Etype, obsInSample, other=NULL,
   }
 }
 
+# function to generate PDF of multivariate normal distribution
 dmvnormInternal <- function(q, mean=0, Sigma=1, log=FALSE){
+  # copy and paste from Ivan's codes
+  
   # The function returns PDF of multivariate normal distribution
   # q should contain obs in columns and series in rows
   if(!is.null(ncol(q))){
@@ -93,15 +108,20 @@ dmvnormInternal <- function(q, mean=0, Sigma=1, log=FALSE){
   return(mvnormReturn);
 }
 
+# function to calculate the Eucledian norm of the off-diagonals of the persistence only
 norm.offdiag <- function(x) {
   diag(x) <- NA
   return(sqrt(sum(c(x[!is.na(x)])^2)))
 }
 
+# function to calculate the Eucledian norm of the diagonal persistence
 norm.diag <- function(x) {sqrt(sum(c(diag(x))^2))}
 
+# function to calculate the Eucledian norm of any vector
 norm.vec <- function(x) {sqrt(sum(c(x)^2))}
 
+# function to produce loss function with penalty
+# choose between RMSE and likelihood
 loss.shrVES <- function(actual, fitted, B) {
   
   nObs <- nrow(actual)
@@ -173,6 +193,7 @@ loss.shrVES <- function(actual, fitted, B) {
   
 }
 
+# function to find the optimal hyperparameter (lambda only) using grid search
 cvLambda <- function(y, model = model, end.date = NULL, h = 2, loss.type = "likelihood",
                      Etype, Ttype, Stype, damped, penalty, hyperparam,
                      seq.lambda = seq.lambda) {
@@ -218,6 +239,7 @@ cvLambda <- function(y, model = model, end.date = NULL, h = 2, loss.type = "like
   
 }
 
+# compile all functions, with y is known
 analyseVES <- function(y, model = model, end.date = end.date, h = 2, 
                        loss.type = "likelihood",
                        Etype, Ttype, Stype, damped, penalty, hyperparam, nLambda) {
@@ -321,6 +343,7 @@ analyseVES <- function(y, model = model, end.date = end.date, h = 2,
               loss.type = loss.type))
 } 
 
+# compile all functions to be run on parallelisation - add genmultiseries
 compile.all <- function(model = model, nObs = 100, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "dependent",
                         end.date = end.date, h = 2, loss.type = "likelihood", Etype, Ttype, Stype, damped, penalty, hyperparam, nLambda) {
   
