@@ -5,7 +5,7 @@ devtools::install_github("config-i1/legion")
 devtools::install_github("config-i1/smooth")
 devtools::install_github("config-i1/greybox")
 
-## Packages to run
+## Call packages to run
 library(nloptr)
 library(parallel)
 library(snow)
@@ -15,7 +15,6 @@ library(smooth)
 library(legion)
 
 ## Function to run
-
 # function to generate time series
 genmultiseries <- function(model = model, nObs = nObs, nVariate = nVariate,
                            persistence.type = "dependent") {
@@ -402,42 +401,42 @@ invisible(clusterExport(cl, "compile.all"))
 
 clusterSetupRNG(cl, seed = 020193)
 
-runs <- 5
+runs <- 500
 
 # with Trace, dependent persistence
-system.time({dgpANN_modelANN_S20_OffDiag_TR_PDP <- clusterApplyLB(cl, 1:runs, function(x) compile.all(model = "ANN", nObs = 36, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "dependent",
+system.time({dgpANN.DP_modelANN.TR_S20_OffDiag <- clusterApplyLB(cl, 1:runs, function(x) compile.all(model = "ANN", nObs = 36, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "dependent",
                                                                                                       end.date = 20, h = 12, loss.type = "trace", Etype = "A", Ttype = NULL, Stype = NULL,
                                                                                                       damped = FALSE, penalty = "offdiag.only", hyperparam = 1, nLambda = 100))})
 
-system.time({dgpANN_modelANN_S240_OffDiag_TR_PDP <- clusterApplyLB(cl, 1:runs, function(x) compile.all(model = "ANN", nObs = 240, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "dependent",
+system.time({dgpANN.DP_modelANN.TR_S240_OffDiag <- clusterApplyLB(cl, 1:runs, function(x) compile.all(model = "ANN", nObs = 240, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "dependent",
                                                                                                        end.date = 20, h = 12, loss.type = "trace", Etype = "A", Ttype = NULL, Stype = NULL,
                                                                                                        damped = FALSE, penalty = "offdiag.only", hyperparam = 1, nLambda = 100))})
 
 # with Likelihood, dependent persistence
-system.time({dgpANN_modelANN_S20_OffDiag_LH_PDP <- clusterApplyLB(cl, 1:runs, function(x) compile.all(model = "ANN", nObs = 36, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "dependent",
+system.time({dgpANN.DP_modelANN.LH_S20_OffDiag <- clusterApplyLB(cl, 1:runs, function(x) compile.all(model = "ANN", nObs = 36, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "dependent",
                                                                                                       end.date = 20, h = 12, loss.type = "likelihood", Etype = "A", Ttype = NULL, Stype = NULL,
                                                                                                       damped = FALSE, penalty = "offdiag.only", hyperparam = 1, nLambda = 100))})
 
-system.time({dgpANN_modelANN_S240_OffDiag_LH_PDP <- clusterApplyLB(cl, 1:runs, function(x) compile.all(model = "ANN", nObs = 240, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "dependent",
+system.time({dgpANN.DP_modelANN.LH_S240_OffDiag <- clusterApplyLB(cl, 1:runs, function(x) compile.all(model = "ANN", nObs = 240, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "dependent",
                                                                                                        end.date = 20, h = 12, loss.type = "likelihood", Etype = "A", Ttype = NULL, Stype = NULL,
                                                                                                        damped = FALSE, penalty = "offdiag.only", hyperparam = 1, nLambda = 100))})
 
 
 # with Trace, independent persistence
-system.time({dgpANN_modelANN_S20_OffDiag_TR_PID <- clusterApplyLB(cl, 1:runs, function(x) compile.all(model = "ANN", nObs = 36, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "independent",
+system.time({dgpANN.ID_modelANN.TR_S20_OffDiag <- clusterApplyLB(cl, 1:runs, function(x) compile.all(model = "ANN", nObs = 36, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "independent",
                                                                                                       end.date = 20, h = 12, loss.type = "trace", Etype = "A", Ttype = NULL, Stype = NULL,
                                                                                                       damped = FALSE, penalty = "offdiag.only", hyperparam = 1, nLambda = 100))})
 
-system.time({dgpANN_modelANN_S240_OffDiag_TR_PID <- clusterApplyLB(cl, 1:runs, function(x) compile.all(model = "ANN", nObs = 240, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "independent",
+system.time({dgpANN.ID_modelANN.TR_S240_OffDiag <- clusterApplyLB(cl, 1:runs, function(x) compile.all(model = "ANN", nObs = 240, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "independent",
                                                                                                        end.date = 20, h = 12, loss.type = "trace", Etype = "A", Ttype = NULL, Stype = NULL,
                                                                                                        damped = FALSE, penalty = "offdiag.only", hyperparam = 1, nLambda = 100))})
 
 # with Likelihood, independent persistence
-system.time({dgpANN_modelANN_S20_OffDiag_LH_PID <- clusterApplyLB(cl, 1:runs, function(x) compile.all(model = "ANN", nObs = 36, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "independent",
+system.time({dgpANN.ID_modelANN.LH_S20_OffDiag <- clusterApplyLB(cl, 1:runs, function(x) compile.all(model = "ANN", nObs = 36, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "independent",
                                                                                                       end.date = 20, h = 12, loss.type = "likelihood", Etype = "A", Ttype = NULL, Stype = NULL,
                                                                                                       damped = FALSE, penalty = "offdiag.only", hyperparam = 1, nLambda = 100))})
 
-system.time({dgpANN_modelANN_S240_OffDiag_LH_PID <- clusterApplyLB(cl, 1:runs, function(x) compile.all(model = "ANN", nObs = 240, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "independent",
+system.time({dgpANN.ID_modelANN.LH_S240_OffDiag <- clusterApplyLB(cl, 1:runs, function(x) compile.all(model = "ANN", nObs = 240, nVariate = 2, matP = matP, vInit = vInit, Sigma = Sigma, persistence.type = "independent",
                                                                                                        end.date = 20, h = 12, loss.type = "likelihood", Etype = "A", Ttype = NULL, Stype = NULL,
                                                                                                        damped = FALSE, penalty = "offdiag.only", hyperparam = 1, nLambda = 100))})
 
